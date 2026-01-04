@@ -18,7 +18,7 @@
 
 * **Exit Lima VM shell:** `exit`
 
-* **To add a host later in one line:**
+* **To add a host later in one line (replace <YOUR_DOCKER_HOST>):**
 
 ```bash
 rdctl shell -- sudo sh -c 'sed -i "/^\s*]/i\    \"<YOUR_DOCKER_HOST>\"," /etc/docker/daemon.json; sudo service docker restart'
