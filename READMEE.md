@@ -6,8 +6,7 @@
 ```json
 {
   "insecure-registries": [
-    "localhost:8082",
-    "172.16.1.95:8082"
+    "localhost:8082"
   ],
   "features": {
     "containerd-snapshotter": false
@@ -23,6 +22,4 @@
 
 ```bash
 rdctl shell -- sudo sh -c 'sed -i "/^\s*]/i\    \"<YOUR_DOCKER_HOST>\"," /etc/docker/daemon.json; sudo service docker restart'
-```
-
 ```
