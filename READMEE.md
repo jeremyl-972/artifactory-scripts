@@ -1,25 +1,45 @@
-# Adding Insecure Registries in Rancher Desktop Lima
+# Docker Backdated Tag Generator
 
-* **Enter Lima VM shell:** `rdctl shell`
-* **View and edit Docker config:** `sudo vi /etc/docker/daemon.json`
+A simple script to **push Docker images to a virtual repository in Artifactory** and generate tags that can be backdated in the database for testing cleanup policies.
 
-```json
-{
-  "insecure-registries": [
-    "localhost:8082"
-  ],
-  "features": {
-    "containerd-snapshotter": false
-  }
-}
-````
+This is especially useful for **reproducing time-based artifact cleanup scenarios**, where images need to appear older than the policy threshold.
 
-* **Restart Docker to apply changes:** `sudo service docker restart`
+---
 
-* **Exit Lima VM shell:** `exit`
+## What it does
 
-* **To add a host later in one line (replace <YOUR_DOCKER_HOST>):**
+- Pulls a source Docker image (default: `hello-world:latest`) from a registry.  
+- Tags the image with a **base version** and **unique tags**.  
+- Pushes multiple versions to a **virtual repository**.  
+- Optionally removes the pushed images locally to save disk space.  
+- Prints an **SQL query** to backdate the `created`, `modified`, and `updated` timestamps in the Artifactory database.
 
-```bash
-rdctl shell -- sudo sh -c 'sed -i "/^\s*]/i\    \"<YOUR_DOCKER_HOST>\"," /etc/docker/daemon.json; sudo service docker restart'
-```
+---
+
+## What it expects
+
+- **Virtual repository name** — the repository to push to (required).  
+- **Local deployment repository** — defaults to `<virtual_repo>-local`, used in the DB query.  
+- **Docker registry** — defaults to `localhost:8082`.  
+- **Docker credentials** — username and password for login.  
+- **Source image** — defaults to `hello-world:latest`.  
+- **Base tag** — defaults to `2.1.0`.  
+- **Number of versions to generate** — defaults to 15.  
+- **Optional cleanup** — whether to remove pushed images locally.
+
+---
+
+## SQL Query
+
+At the end of the run, the script prints a query to set the pushed images’ timestamps older than a year:
+
+```sql
+UPDATE nodes
+SET
+    created = '1721850900000',
+    modified = '1721850900000',
+    updated = '1721850900000'
+WHERE
+    repo = '<local_repo>' AND
+    node_path LIKE 'custom-docker-image%';
+
