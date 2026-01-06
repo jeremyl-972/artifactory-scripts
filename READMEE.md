@@ -1,8 +1,8 @@
 # Docker Backdated Tag Generator
 
-A simple script to **push Docker images to a virtual repository in Artifactory** and generate tags that can be backdated in the database for testing cleanup policies.
+A simple script to push Docker images to a **virtual** docker repo and generate tags that can be backdated in the database for testing cleanup policies.
 
-This is especially useful for **reproducing time-based artifact cleanup scenarios**, where images need to appear older than the policy threshold.
+This is especially useful for reproducing **time-based artifact cleanup** scenarios, where images need to appear older than the policy threshold.
 
 ---
 
@@ -10,7 +10,7 @@ This is especially useful for **reproducing time-based artifact cleanup scenario
 
 - Pulls a source Docker image (default: `hello-world:latest`) from a registry.  
 - Tags the image with a **base version** and **unique tags**.  
-- Pushes multiple versions to a **virtual repository**.  
+- Pushes multiple versions to a **virtual repo**.  
 - Optionally removes the pushed images locally to save disk space.  
 - Prints an **SQL query** to backdate the `created`, `modified`, and `updated` timestamps in the Artifactory database.
 
